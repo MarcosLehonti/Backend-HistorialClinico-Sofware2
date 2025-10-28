@@ -48,8 +48,7 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Activa CORS
                 .csrf(csrf -> csrf.disable()) // Deshabilita CSRF solo para pruebas
                 .authorizeHttpRequests(auth -> auth
-                        //.requestMatchers("/api/usuarios/**").permitAll() // Permitir todas las rutas de usuarios
-                        //.requestMatchers("/api/usuarios/login").permitAll()
+                        // REST API endpoints
                         .requestMatchers("/api/usuarios/**").permitAll() // Permitir registro y login
                         .requestMatchers("/api/especialidades/**", "/api/horarios/**").permitAll() // Permitir especialidades y horarios
                         .requestMatchers("/api/roles/**").permitAll() // Permitir registro y login
@@ -62,6 +61,11 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/bitacora/**").permitAll()
                         .requestMatchers("/api/medicos/**").permitAll()//permitir las rutas de medicos a todos
                         .requestMatchers("/api/usuarios/perfil").authenticated() // Solo usuarios autenticados pueden acceder al perfil
+                        
+                        // GraphQL endpoints
+                        .requestMatchers("/graphql").permitAll() // Permitir acceso a GraphQL
+                        .requestMatchers("/graphiql").permitAll() // Permitir acceso a GraphiQL (interfaz de pruebas)
+                        
                         .anyRequest().authenticated() // Cualquier otra solicitud requiere autenticación
 
                 );
