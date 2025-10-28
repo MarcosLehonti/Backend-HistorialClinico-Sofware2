@@ -60,11 +60,6 @@ public class UsuarioResolver {
     }
 
     @QueryMapping
-    public List<Rol> roles() {
-        return usuarioService.obtenerTodosRoles();
-    }
-
-    @QueryMapping
     public List<Especialidad> especialidadesPorUsuario(@Argument Long usuarioId) {
         return usuarioService.obtenerEspecialidadesPorUsuario(usuarioId);
     }

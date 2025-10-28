@@ -21,10 +21,11 @@ public class Especialidad {
             joinColumns = @JoinColumn(name = "especialidad_id"),
             inverseJoinColumns = @JoinColumn(name = "horario_id")
     )
+    @JsonBackReference("especialidad-horario")
     private Set<Horario> horarios = new HashSet<>();
 
     @ManyToMany(mappedBy = "especialidades")
-    @JsonBackReference("especialidad-cita")
+    @JsonBackReference("especialidad-usuario")
     private Set<Usuario> usuarios = new HashSet<>();
 
     // Constructor vacío
