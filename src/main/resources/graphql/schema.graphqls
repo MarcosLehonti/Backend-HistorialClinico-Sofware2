@@ -1,0 +1,248 @@
+# Scalar personalizado para fechas
+scalar Date
+scalar DateTime
+
+# Tipos de datos principales
+type Usuario {
+    id: ID!
+    username: String!
+    email: String!
+    roles: [Rol!]!
+    especialidades: [Especialidad!]
+    horarios: [Horario!]
+}
+
+type Rol {
+    id: ID!
+    nombre: String!
+}
+
+type Especialidad {
+    id: ID!
+    nombre: String!
+}
+
+type Horario {
+    id: ID!
+    fecha: Date!
+    horaInicio: String!
+    horaFin: String!
+    disponible: Boolean!
+    especialidad: Especialidad
+    turno: Turno
+    dia: Dia
+}
+
+type Turno {
+    id: ID!
+    nombre: String!
+}
+
+type Dia {
+    id: ID!
+    nombre: String!
+}
+
+type Cita {
+    id: ID!
+    usuario: Usuario!
+    medico: Usuario!
+    especialidad: Especialidad!
+    turno: Turno!
+    dia: Dia!
+    horario: String!
+    nombreUsuarioLogeado: String!
+    fecha: Date
+    horarioSeleccionado: Horario!
+}
+
+type Triaje {
+    id: ID!
+    paciente: Usuario!
+    enfermera: Usuario!
+    presionArterial: String!
+    temperatura: Float!
+    peso: Float!
+    altura: Float!
+    frecuenciaCardiaca: Int!
+    frecuenciaRespiratoria: Int!
+    saturacionOxigeno: Float!
+    observaciones: String
+    fecha: DateTime!
+}
+
+type Diagnostico {
+    id: ID!
+    paciente: Usuario!
+    medico: Usuario!
+    descripcion: String!
+    tratamiento: String
+    fecha: DateTime!
+}
+
+type Antecedente {
+    id: ID!
+    paciente: Usuario!
+    tipo: String!
+    descripcion: String!
+    fecha: Date!
+}
+
+type Bitacora {
+    id: ID!
+    usuario: String!
+    accion: String!
+    detalles: String
+    fecha: DateTime!
+}
+
+# Respuestas de autenticación
+type LoginResponse {
+    token: String!
+    usuarioId: ID!
+    rol: String!
+}
+
+type AuthPayload {
+    token: String!
+    usuario: Usuario!
+}
+
+# Inputs para mutations
+input UsuarioInput {
+    username: String!
+    password: String!
+    email: String!
+}
+
+input LoginInput {
+    username: String!
+    password: String!
+}
+
+input CitaInput {
+    usuarioId: ID!
+    medicoId: ID!
+    especialidadId: ID!
+    turnoId: ID!
+    diaId: ID!
+    horario: String!
+    nombreUsuarioLogeado: String!
+    horarioId: ID!
+}
+
+input TriajeInput {
+    pacienteId: ID!
+    enfermeraId: ID!
+    presionArterial: String!
+    temperatura: Float!
+    peso: Float!
+    altura: Float!
+    frecuenciaCardiaca: Int!
+    frecuenciaRespiratoria: Int!
+    saturacionOxigeno: Float!
+    observaciones: String
+}
+
+input DiagnosticoInput {
+    pacienteId: ID!
+    medicoId: ID!
+    descripcion: String!
+    tratamiento: String
+}
+
+input AntecedenteInput {
+    pacienteId: ID!
+    tipo: String!
+    descripcion: String!
+    fecha: Date!
+}
+
+# Queries (equivalente a GET en REST)
+type Query {
+    # Usuarios
+    usuarios: [Usuario!]!
+    usuario(id: ID!): Usuario
+    usuarioPorUsername(username: String!): Usuario
+    medicos: [Usuario!]!
+    perfil: Usuario!
+    
+    # Roles
+    roles: [Rol!]!
+    rol(id: ID!): Rol
+    
+    # Especialidades
+    especialidades: [Especialidad!]!
+    especialidad(id: ID!): Especialidad
+    especialidadesPorUsuario(usuarioId: ID!): [Especialidad!]!
+    
+    # Horarios
+    horarios: [Horario!]!
+    horario(id: ID!): Horario
+    horariosPorEspecialidad(especialidadId: ID!): [Horario!]!
+    horariosDisponibles(especialidadId: ID!, fecha: Date!): [Horario!]!
+    
+    # Citas
+    citas: [Cita!]!
+    cita(id: ID!): Cita
+    citasPorUsuario(usuarioId: ID!): [Cita!]!
+    citasPorMedico(medicoId: ID!): [Cita!]!
+    
+    # Triajes
+    triajes: [Triaje!]!
+    triaje(id: ID!): Triaje
+    triajesPorPaciente(pacienteId: ID!): [Triaje!]!
+    
+    # Diagnósticos
+    diagnosticos: [Diagnostico!]!
+    diagnostico(id: ID!): Diagnostico
+    diagnosticosPorPaciente(pacienteId: ID!): [Diagnostico!]!
+    
+    # Antecedentes
+    antecedentes: [Antecedente!]!
+    antecedente(id: ID!): Antecedente
+    antecedentesPorPaciente(pacienteId: ID!): [Antecedente!]!
+    
+    # Bitácora
+    bitacoras: [Bitacora!]!
+}
+
+# Mutations (equivalente a POST, PUT, DELETE en REST)
+type Mutation {
+    # Autenticación
+    login(input: LoginInput!): LoginResponse!
+    registro(input: UsuarioInput!): Usuario!
+    
+    # Usuarios
+    actualizarUsuario(id: ID!, input: UsuarioInput!): Usuario!
+    eliminarUsuario(id: ID!): Boolean!
+    asignarRol(usuarioId: ID!, rol: String!): Boolean!
+    asignarEspecialidades(usuarioId: ID!, especialidadIds: [ID!]!): Boolean!
+    asignarHorarios(usuarioId: ID!, horarioIds: [ID!]!): Boolean!
+    
+    # Citas
+    crearCita(input: CitaInput!): Cita!
+    actualizarCita(id: ID!, input: CitaInput!): Cita!
+    eliminarCita(id: ID!): Boolean!
+    
+    # Triajes
+    crearTriaje(input: TriajeInput!): Triaje!
+    actualizarTriaje(id: ID!, input: TriajeInput!): Triaje!
+    eliminarTriaje(id: ID!): Boolean!
+    
+    # Diagnósticos
+    crearDiagnostico(input: DiagnosticoInput!): Diagnostico!
+    actualizarDiagnostico(id: ID!, input: DiagnosticoInput!): Diagnostico!
+    eliminarDiagnostico(id: ID!): Boolean!
+    
+    # Antecedentes
+    crearAntecedente(input: AntecedenteInput!): Antecedente!
+    actualizarAntecedente(id: ID!, input: AntecedenteInput!): Antecedente!
+    eliminarAntecedente(id: ID!): Boolean!
+    
+    # Especialidades
+    crearEspecialidad(nombre: String!): Especialidad!
+    
+    # Horarios
+    crearHorario(fecha: Date!, horaInicio: String!, horaFin: String!, especialidadId: ID!, turnoId: ID!, diaId: ID!): Horario!
+}
