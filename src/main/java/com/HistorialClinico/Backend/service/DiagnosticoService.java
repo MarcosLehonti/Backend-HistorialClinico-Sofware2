@@ -4,6 +4,7 @@ package com.HistorialClinico.Backend.service;
 
 import com.HistorialClinico.Backend.dto.DiagnosticoDTO;
 import com.HistorialClinico.Backend.dto.DiagnosticoResponseDTO;
+import com.HistorialClinico.Backend.dto.EmailNotificationDTO;
 import com.HistorialClinico.Backend.model.Diagnostico;
 import com.HistorialClinico.Backend.model.Usuario;
 import com.HistorialClinico.Backend.model.Especialidad;
@@ -13,7 +14,9 @@ import com.HistorialClinico.Backend.repository.EspecialidadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,14 +25,17 @@ public class DiagnosticoService {
     private final DiagnosticoRepository diagnosticoRepository;
     private final UsuarioRepository usuarioRepository;
     private final EspecialidadRepository especialidadRepository;
+    private final EmailNotificationService emailNotificationService;
 
     @Autowired
     public DiagnosticoService(DiagnosticoRepository diagnosticoRepository,
                               UsuarioRepository usuarioRepository,
-                              EspecialidadRepository especialidadRepository) {
+                              EspecialidadRepository especialidadRepository,
+                              EmailNotificationService emailNotificationService) {
         this.diagnosticoRepository = diagnosticoRepository;
         this.usuarioRepository = usuarioRepository;
         this.especialidadRepository = especialidadRepository;
+        this.emailNotificationService = emailNotificationService;
     }
 
     public Diagnostico crearDiagnostico(DiagnosticoDTO diagnosticoDTO) {
@@ -48,8 +54,13 @@ public class DiagnosticoService {
         diagnostico.setEspecialidad(especialidad);
         diagnostico.setTratamiento(diagnosticoDTO.getTratamiento());
 
-
-        return diagnosticoRepository.save(diagnostico);
+        // Guardar el diagnóstico
+        Diagnostico diagnosticoGuardado = diagnosticoRepository.save(diagnostico);
+        
+        // Enviar notificación por email al paciente
+        enviarNotificacionDiagnostico(diagnosticoGuardado, paciente, medico, especialidad);
+        
+        return diagnosticoGuardado;
     }
 
 
@@ -80,5 +91,36 @@ public class DiagnosticoService {
         dto.setEspecialidad(diagnostico.getEspecialidad().getNombre());
         dto.setTratamiento(diagnostico.getTratamiento());
         return dto;
+    }
+    
+    /**
+     * Envía notificación de diagnóstico al email del paciente
+     */
+    private void enviarNotificacionDiagnostico(Diagnostico diagnostico, Usuario paciente, 
+                                               Usuario medico, Especialidad especialidad) {
+        try {
+            // Formatear la fecha en español
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", 
+                                                                      new Locale("es", "BO"));
+            String fechaFormateada = diagnostico.getFecha().format(formatter);
+            
+            // Crear DTO con los datos del email
+            EmailNotificationDTO emailData = EmailNotificationDTO.forDiagnosisNotification(
+                paciente.getEmail(),
+                paciente.getUsername(),
+                medico.getUsername(),
+                especialidad.getNombre(),
+                fechaFormateada,
+                diagnostico.getDescripcion(),
+                diagnostico.getTratamiento()
+            );
+            
+            // Enviar email de forma asíncrona (no bloquea el flujo principal)
+            emailNotificationService.sendDiagnosisNotification(emailData);
+            
+        } catch (Exception e) {
+            // Log del error pero no interrumpir el flujo
+            System.err.println("Error al enviar notificación de diagnóstico: " + e.getMessage());
+        }
     }
 }
