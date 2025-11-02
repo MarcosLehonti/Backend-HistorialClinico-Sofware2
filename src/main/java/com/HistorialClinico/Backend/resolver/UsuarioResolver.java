@@ -4,6 +4,7 @@ import com.HistorialClinico.Backend.model.Especialidad;
 import com.HistorialClinico.Backend.model.Horario;
 import com.HistorialClinico.Backend.model.Rol;
 import com.HistorialClinico.Backend.model.Usuario;
+import com.HistorialClinico.Backend.repository.UsuarioRepository;
 import com.HistorialClinico.Backend.service.BitacoraService;
 import com.HistorialClinico.Backend.service.JwtService;
 import com.HistorialClinico.Backend.service.UsuarioService;
@@ -54,9 +55,14 @@ public class UsuarioResolver {
     }
 
     @QueryMapping
-    public Usuario perfil(@ContextValue String token) {
+    public Usuario perfil(@ContextValue(name = "token", required = false) String token) {
+        if (token == null || token.isEmpty()) {
+            throw new RuntimeException("Token no proporcionado o inválido");
+        }
+
         String username = jwtService.extractUsername(token);
-        return usuarioService.findByUsername(username).orElse(null);
+        return usuarioService.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con el token proporcionado"));
     }
 
     @QueryMapping
@@ -68,11 +74,11 @@ public class UsuarioResolver {
     public List<Horario> horariosPorEspecialidad(@Argument Long usuarioId, @Argument Long especialidadId) {
         Usuario usuario = usuarioService.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        
+
         if (!usuario.getEspecialidades().stream().anyMatch(e -> e.getId().equals(especialidadId))) {
             throw new RuntimeException("Usuario no tiene esta especialidad asignada");
         }
-        
+
         return usuarioService.obtenerHorariosPorEspecialidad(especialidadId);
     }
 
@@ -80,10 +86,11 @@ public class UsuarioResolver {
 
     @MutationMapping
     public Map<String, Object> login(@Argument Map<String, String> input) {
-        String username = input.get("username");
+        String email = input.get("email");
         String password = input.get("password");
-        
-        Optional<Usuario> usuario = usuarioService.findByUsername(username);
+
+        Optional<Usuario> usuario = usuarioService.findByEmail(email);
+
         Map<String, Object> response = new HashMap<>();
 
         if (usuario.isPresent() && usuarioService.checkPassword(password, usuario.get().getPassword())) {
@@ -96,12 +103,13 @@ public class UsuarioResolver {
             response.put("token", token);
             response.put("usuarioId", usuario.get().getId());
             response.put("rol", rol);
+            response.put("email", usuario.get().getEmail());
 
-            // Registro de bitácora
+            // Registrar en bitácora
             bitacoraService.registrar(
-                    usuario.get().getUsername(),
-                    "Inicio de Sesion",
-                    "Inicio de Sesion Exitoso para el usuario de rol " + rol
+                    usuario.get().getEmail(),
+                    "Inicio de Sesión",
+                    "Inicio de Sesión exitoso para usuario con rol " + rol
             );
 
             return response;
@@ -116,16 +124,16 @@ public class UsuarioResolver {
         usuario.setUsername(input.get("username"));
         usuario.setPassword(input.get("password"));
         usuario.setEmail(input.get("email"));
-        
+
         Usuario nuevoUsuario = usuarioService.saveUsuario(usuario);
-        
+
         // Registrar en la bitácora
         bitacoraService.registrar(
                 "Administrador del sistema",
                 "Registro de Nuevo Usuario",
                 "Usuario creado con ID " + nuevoUsuario.getId() + " y nombre de usuario " + nuevoUsuario.getUsername()
         );
-        
+
         return nuevoUsuario;
     }
 
@@ -135,7 +143,7 @@ public class UsuarioResolver {
         usuarioActualizado.setUsername(input.get("username"));
         usuarioActualizado.setPassword(input.get("password"));
         usuarioActualizado.setEmail(input.get("email"));
-        
+
         return usuarioService.updateUsuario(id, usuarioActualizado)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }

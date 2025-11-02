@@ -22,7 +22,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Agregar los orígenes permitidos: localhost y Vercel
-        configuration.setAllowedOrigins(List.of("http://localhost:4200", "https://frontend-historial-clinico.vercel.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200","http://localhost:4000" ,"https://frontend-historial-clinico.vercel.app"));
 
         // Métodos HTTP permitidos
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
