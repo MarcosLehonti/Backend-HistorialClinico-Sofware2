@@ -37,7 +37,12 @@ public class TriajeResolver {
     public Triaje crearTriaje(@Argument Map<String, Object> input) {
         TriajeDTO triajeDTO = new TriajeDTO();
         triajeDTO.setPacienteId(Long.valueOf(input.get("pacienteId").toString()));
-        triajeDTO.setEnfermeraId(Long.valueOf(input.get("enfermeraId").toString()));
+        
+        // EnfermeraId es opcional, si no viene lo obtenemos del contexto de seguridad
+        if (input.containsKey("enfermeraId")) {
+            triajeDTO.setEnfermeraId(Long.valueOf(input.get("enfermeraId").toString()));
+        }
+        
         triajeDTO.setTemperatura(Double.valueOf(input.get("temperatura").toString()));
         triajeDTO.setFrecuenciaCardiaca(Integer.valueOf(input.get("frecuenciaCardiaca").toString()));
         triajeDTO.setFrecuenciaRespiratoria(Integer.valueOf(input.get("frecuenciaRespiratoria").toString()));
@@ -45,6 +50,16 @@ public class TriajeResolver {
         triajeDTO.setPeso(Double.valueOf(input.get("peso").toString()));
         triajeDTO.setEstatura(Double.valueOf(input.get("estatura").toString()));
         
+        // Campos opcionales
+        if (input.containsKey("presionArterial")) {
+            triajeDTO.setPresionArterial(input.get("presionArterial").toString());
+        }
+        if (input.containsKey("observaciones")) {
+            triajeDTO.setObservaciones(input.get("observaciones").toString());
+        }
+        if (input.containsKey("fecha")) {
+            triajeDTO.setFecha(input.get("fecha").toString());
+        }
         if (input.containsKey("alergias")) {
             triajeDTO.setAlergias(input.get("alergias").toString());
         }

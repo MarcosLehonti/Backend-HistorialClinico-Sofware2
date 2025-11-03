@@ -39,6 +39,9 @@ public class TriajeDTO {
 
     @NotNull(message = "El motivo de la consulta es obligatorio")
     private String motivoConsulta;
+    
+    private String presionArterial;
+    private String observaciones;
 
     // Getters y Setters
 
@@ -144,5 +147,21 @@ public class TriajeDTO {
 
     public void setMotivoConsulta(String motivoConsulta) {
         this.motivoConsulta = motivoConsulta;
+    }
+
+    public String getPresionArterial() {
+        return presionArterial;
+    }
+
+    public void setPresionArterial(String presionArterial) {
+        this.presionArterial = presionArterial;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
     }
 }

@@ -22,10 +22,7 @@ public class CitaResolver {
 
     @QueryMapping
     public List<Cita> citasPorUsuario(@Argument Long usuarioId) {
-        // El servicio retorna CitaResponseDTO, pero necesitamos Cita
-        // Por ahora comentamos este método para que compile
-        // TODO: Implementar conversión de DTO a entidad o ajustar el servicio
-        throw new UnsupportedOperationException("Método no implementado aún. Use citasPorMedico como alternativa.");
+        return citaService.obtenerCitasPorUsuario(usuarioId);
     }
 
     @QueryMapping

@@ -85,6 +85,10 @@ public class CitaService {
     public List<CitaResponseDTO> obtenerCitasPorUsuarioId(Long usuarioId) {
         return citaRepository.findCitasByUsuarioId(usuarioId);
     }
+    
+    public List<Cita> obtenerCitasPorUsuario(Long usuarioId) {
+        return citaRepository.findByUsuarioId(usuarioId);
+    }
 
     public List<Cita> obtenerCitasPorMedico(Long medicoId) {
         return citaRepository.findByMedicoId(medicoId);

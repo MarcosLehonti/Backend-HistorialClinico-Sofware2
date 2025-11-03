@@ -17,6 +17,8 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
             "JOIN c.turno t " +
             "WHERE c.usuario.id = :usuarioId")
     List<CitaResponseDTO> findCitasByUsuarioId(@Param("usuarioId") Long usuarioId);
+    
+    List<Cita> findByUsuarioId(Long usuarioId); // Método para encontrar citas por el ID del usuario (paciente)
     List<Cita> findByMedicoId(Long medicoId); // Método para encontrar citas por el ID del médico
 
     @Query("SELECT new com.HistorialClinico.Backend.dto.CitaResponseDTO(c.horario, c.nombreUsuarioLogeado, c.dia.nombre, c.especialidad.nombre, c.turno.nombre) " +
