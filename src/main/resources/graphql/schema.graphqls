@@ -60,14 +60,15 @@ type Triaje {
     id: ID!
     paciente: Usuario!
     enfermera: Usuario!
-    presionArterial: String!
     temperatura: Float!
     peso: Float!
-    altura: Float!
+    estatura: Float!
     frecuenciaCardiaca: Int!
     frecuenciaRespiratoria: Int!
     saturacionOxigeno: Float!
-    observaciones: String
+    alergias: String
+    enfermedadesCronicas: String
+    motivoConsulta: String
     fecha: DateTime!
 }
 
@@ -139,18 +140,17 @@ input CitaInput {
 
 input TriajeInput {
     pacienteId: ID!
-    enfermeraId: ID
-    presionArterial: String
+    enfermeraId: ID!
     temperatura: Float!
     peso: Float!
-    altura: Float!
+    estatura: Float!
     frecuenciaCardiaca: Int!
-    frecuenciaRespiratoria: Int
-    saturacionOxigeno: Float
-    observaciones: String
-    fecha: String
+    frecuenciaRespiratoria: Int!
+    saturacionOxigeno: Float!
+    alergias: String
+    enfermedadesCronicas: String
+    motivoConsulta: String
 }
-
 input DiagnosticoInput {
     pacienteId: ID!
     medicoId: ID!
