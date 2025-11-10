@@ -69,22 +69,23 @@ type Triaje {
     alergias: String
     enfermedadesCronicas: String
     motivoConsulta: String
-    fecha: DateTime!
+    fecha: String!
 }
 
+# ✅ Corregido según tu DTO real
 type Diagnostico {
     id: ID!
-    paciente: Usuario!
-    medico: Usuario!
     descripcion: String!
     tratamiento: String
-    fecha: DateTime!
+    fecha: Date!
+    nombreMedico: String
+    nombrePaciente: String
+    especialidad: String
 }
 
 type Antecedente {
     id: ID!
     paciente: Usuario!
-    tipo: String!
     descripcion: String!
     fecha: Date!
 }
@@ -151,6 +152,7 @@ input TriajeInput {
     enfermedadesCronicas: String
     motivoConsulta: String
 }
+
 input DiagnosticoInput {
     pacienteId: ID!
     medicoId: ID!
@@ -214,6 +216,9 @@ type Query {
 
     # Bitácora
     bitacoras: [Bitacora!]!
+
+    # 👇 Nueva query agregada
+    usuariosPorEspecialidad(especialidadId: ID!): [UsuarioEspecialidadDiaDTO!]!
 }
 
 # ==========================
@@ -255,5 +260,27 @@ type Mutation {
     crearEspecialidad(nombre: String!): Especialidad!
 
     # Horarios
-    crearHorario(fecha: Date!, horaInicio: String!, horaFin: String!, especialidadId: ID!, turnoId: ID!, diaId: ID!): Horario!
+    crearHorario(
+        fecha: Date!,
+        horaInicio: String!,
+        horaFin: String!,
+        especialidadId: ID!,
+        turnoId: ID!,
+        diaId: ID!
+    ): Horario!
+}
+
+# ==========================
+# 🧩 DTO para la nueva query
+# ==========================
+type UsuarioEspecialidadDiaDTO {
+    usuarioId: ID!
+    usuario: String!
+    especialidad: String!
+    turno: String!
+    horario: String!
+    dia: String!
+    fecha: Date!
+    horarioId: ID!
+    disponibilidad: Boolean!
 }
