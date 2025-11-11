@@ -95,8 +95,23 @@ public class DataInitializer {
         return args -> {
             // Crear especialidades por defecto si no existen
             List<String> especialidadesPorDefecto = Arrays.asList(
-                    "Pediatría", "Medicina General", "Laboratorios", "Psicología", "Dermatología", "Cardiología"
+                    "Cardiología",
+                    "Pediatría",
+                    "Dermatología",
+                    "Neurología",
+                    "Traumatología",
+                    "Ginecología",
+                    "Oftalmología",
+                    "Otorrinolaringología",
+                    "Psiquiatría",
+                    "Medicina General",
+                    "Endocrinología",
+                    "Gastroenterología",
+                    "Urología",
+                    "Neumología",
+                    "Oncología"
             );
+
 
             for (String nombre : especialidadesPorDefecto) {
                 if (!especialidadService.existsByNombre(nombre)) {
