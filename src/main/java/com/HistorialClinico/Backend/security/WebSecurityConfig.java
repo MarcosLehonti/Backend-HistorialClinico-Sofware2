@@ -27,7 +27,9 @@ public class WebSecurityConfig {
                 "http://localhost:4000",
                 "https://frontend-historial-clinico.vercel.app",
                 "https://fornted-historial-clinico-sofware2.vercel.app",// FRONTED
-                "https://microservicio-firebase.onrender.com"// MICROSERVICIO DE FIREBASE
+                "https://microservicio-firebase.onrender.com",// MICROSERVICIO DE FIREBASE
+
+                "ttps://microservicio-emails-production.up.railway.app/"
         ));
 
 
